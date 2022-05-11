@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/hajimehoshi/ebiten"
-	"github.com/ryosama/go-sprite"
 	"log"
+
+	"github.com/favos-me/go-sprite"
+	"github.com/hajimehoshi/ebiten"
 )
 
 const (
@@ -39,7 +40,7 @@ func main() {
 	for i := 0; i < len(sprites); i++ {
 		sprites[i] = sprite.NewSprite()
 		sprites[i].CenterCoordonnates = true
-		sprites[i].AddAnimation("default", "gfx/som_girl_stand_down.png", 1, 1, ebiten.FilterDefault)
+		sprites[i].AddAnimation(sprite.DefaultAnimationLabel, "gfx/som_girl_stand_down.png", 1, 1, ebiten.FilterDefault)
 		sprites[i].Position(windowWidth/4*x, windowHeight/4*y)
 		sprites[i].Start()
 

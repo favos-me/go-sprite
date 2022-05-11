@@ -2,18 +2,27 @@ package main
 
 import (
 	"fmt"
+	"log"
+
+	sprite "github.com/favos-me/go-sprite"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/hajimehoshi/ebiten/inpututil"
-	"github.com/ryosama/go-sprite"
-	"log"
 )
 
 const (
-	windowWidth  = 320 // Width of the window
-	windowHeight = 240 // Height of the window
-	scale        = 2   // Scale of the window
-	girlSpeed    = windowWidth / 160
+	windowWidth         = 320 // Width of the window
+	windowHeight        = 240 // Height of the window
+	scale               = 2   // Scale of the window
+	girlSpeed           = windowWidth / 160
+	AnimationStandLeft  = 1
+	AnimationStandRight = 2
+	AnimationWalkleft   = 3
+	AnimationWalkRight  = 4
+	AnimationStandUp    = 5
+	AnimationWalkUp     = 6
+	AnimationStandDown  = 7
+	AnimationWalkDown   = 8
 )
 
 var (
@@ -58,18 +67,18 @@ func main() {
 
 	// create new sprite and load animations
 	girl = sprite.NewSprite()
-	girl.AddAnimation("stand-right", "gfx/som_girl_stand_right.png", 0, 1, ebiten.FilterDefault)
-	girl.AddAnimation("walk-right", "gfx/som_girl_walk_right.png", 700, 6, ebiten.FilterDefault)
-	girl.AddAnimation("stand-left", "gfx/som_girl_stand_left.png", 0, 1, ebiten.FilterDefault)
-	girl.AddAnimation("walk-left", "gfx/som_girl_walk_left.png", 700, 6, ebiten.FilterDefault)
-	girl.AddAnimation("stand-up", "gfx/som_girl_stand_up.png", 0, 1, ebiten.FilterDefault)
-	girl.AddAnimation("walk-up", "gfx/som_girl_walk_up.png", 500, 4, ebiten.FilterDefault)
-	girl.AddAnimation("stand-down", "gfx/som_girl_stand_down.png", 0, 1, ebiten.FilterDefault)
-	girl.AddAnimation("walk-down", "gfx/som_girl_walk_down.png", 500, 4, ebiten.FilterDefault)
+	girl.AddAnimation(AnimationStandRight, "gfx/som_girl_stand_right.png", 0, 1, ebiten.FilterDefault)
+	girl.AddAnimation(AnimationWalkRight, "gfx/som_girl_walk_right.png", 700, 6, ebiten.FilterDefault)
+	girl.AddAnimation(AnimationStandLeft, "gfx/som_girl_stand_left.png", 0, 1, ebiten.FilterDefault)
+	girl.AddAnimation(AnimationWalkleft, "gfx/som_girl_walk_left.png", 700, 6, ebiten.FilterDefault)
+	girl.AddAnimation(AnimationStandUp, "gfx/som_girl_stand_up.png", 0, 1, ebiten.FilterDefault)
+	girl.AddAnimation(AnimationWalkUp, "gfx/som_girl_walk_up.png", 500, 4, ebiten.FilterDefault)
+	girl.AddAnimation(AnimationStandDown, "gfx/som_girl_stand_down.png", 0, 1, ebiten.FilterDefault)
+	girl.AddAnimation(AnimationWalkDown, "gfx/som_girl_walk_down.png", 500, 4, ebiten.FilterDefault)
 
 	// set position and first animation
 	girl.Position(windowWidth/2, windowHeight/2)
-	girl.CurrentAnimation = "stand-right"
+	girl.CurrentAnimation = AnimationStandRight
 	girl.Start()
 
 	// infinite loop
@@ -107,13 +116,13 @@ func binding() {
 			girl.Direction = 0
 			girl.Speed = girlSpeed
 		}
-		girl.CurrentAnimation = "walk-right"
+		girl.CurrentAnimation = AnimationWalkRight
 		girl.Start() // Show, Reset, Resume
 	}
 
 	if inpututil.IsKeyJustReleased(ebiten.KeyRight) {
 		girl.Speed = 0
-		girl.CurrentAnimation = "stand-right"
+		girl.CurrentAnimation = AnimationStandRight
 	}
 
 	//////////////////////////// GO THE LEFT
@@ -130,13 +139,13 @@ func binding() {
 			girl.Direction = 180
 		}
 
-		girl.CurrentAnimation = "walk-left"
+		girl.CurrentAnimation = AnimationWalkleft
 		girl.Start() // Show, Reset, Resume
 	}
 
 	if inpututil.IsKeyJustReleased(ebiten.KeyLeft) {
 		girl.Speed = 0
-		girl.CurrentAnimation = "stand-left"
+		girl.CurrentAnimation = AnimationStandLeft
 	}
 
 	//////////////////////////// GO THE TOP
@@ -153,13 +162,13 @@ func binding() {
 			girl.Speed = girlSpeed
 		}
 
-		girl.CurrentAnimation = "walk-up"
+		girl.CurrentAnimation = AnimationWalkUp
 		girl.Start() // Show, Reset, Resume
 	}
 
 	if inpututil.IsKeyJustReleased(ebiten.KeyUp) {
 		girl.Speed = 0
-		girl.CurrentAnimation = "stand-up"
+		girl.CurrentAnimation = AnimationStandUp
 	}
 
 	//////////////////////////// GO THE BOTTOM
@@ -176,12 +185,12 @@ func binding() {
 			girl.Direction = 270
 		}
 
-		girl.CurrentAnimation = "walk-down"
+		girl.CurrentAnimation = AnimationWalkDown
 		girl.Start() // Show, Reset, Resume
 	}
 
 	if inpututil.IsKeyJustReleased(ebiten.KeyDown) {
 		girl.Speed = 0
-		girl.CurrentAnimation = "stand-down"
+		girl.CurrentAnimation = AnimationStandDown
 	}
 }

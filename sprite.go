@@ -13,13 +13,14 @@ mySprite.Start()
 */package sprite
 
 import (
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"image"
 	"image/color"
 	"log"
 	"math"
 	"time"
+
+	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
 	//"fmt"
 )
 
@@ -50,15 +51,19 @@ const (
 	Verticaly   = true
 )
 
+const (
+	DefaultAnimationLabel = 0
+)
+
 var violet = color.RGBA{R: 255, G: 0, B: 255, A: 255}
 
 /*Sprite contains the sprite, animations and effects */
 type Sprite struct {
 	// Animation label currently displayed
-	CurrentAnimation string
+	CurrentAnimation int
 
 	// Array of animations
-	Animations map[string]*Animation
+	Animations map[int]*Animation
 
 	// X coordinates of the sprite (in pixel)
 	X float64
@@ -163,7 +168,7 @@ type animationEffect struct {
 //EffectOptions contains options for the effect
 type EffectOptions struct {
 	// Name of animation (default is omitted)
-	Animation string
+	Animation int
 
 	// Effect= Zoom, FlipX, FlipY, Fade, Turn, Move
 	Effect int
@@ -216,10 +221,10 @@ type EffectOptions struct {
 //NewSprite creates a new sprite
 func NewSprite() *Sprite {
 	sprite := new(Sprite)
-	sprite.Animations = make(map[string]*Animation)
+	sprite.Animations = make(map[int]*Animation)
 	sprite.Visible = true
 	sprite.Animated = true
-	sprite.CurrentAnimation = "default"
+	sprite.CurrentAnimation = 0
 	sprite.ZoomX = 1
 	sprite.ZoomY = 1
 	sprite.Red = 1
@@ -271,7 +276,7 @@ Example :
 
 mySprite.AddAnimation("walk-right",	"walk_right.png", 700, 6, ebiten.FilterDefault)
 */
-func (sprite *Sprite) AddAnimation(label string, path string, duration int, steps int, filter ebiten.Filter) {
+func (sprite *Sprite) AddAnimation(label int, path string, duration int, steps int, filter ebiten.Filter) {
 	sprite.Animations[label] = newAnimation(path, duration, steps, filter)
 }
 
@@ -284,9 +289,6 @@ sprites[i].AddEffect(&sprite.EffectOptions{ Effect: sprite.Zoom, Zoom:3, Duratio
 
 */
 func (sprite *Sprite) AddEffect(options *EffectOptions) {
-	if options.Animation == "" {
-		options.Animation = "default"
-	}
 
 	options.durationTime = time.Millisecond * time.Duration(options.Duration)
 

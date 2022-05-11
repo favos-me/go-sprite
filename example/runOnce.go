@@ -1,11 +1,12 @@
 package main
 
 import (
+	"log"
+
+	"github.com/favos-me/go-sprite"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/hajimehoshi/ebiten/inpututil"
-	"github.com/ryosama/go-sprite"
-	"log"
 )
 
 const (
@@ -40,7 +41,7 @@ func update(surface *ebiten.Image) error {
 func main() {
 
 	explosion4 = sprite.NewSprite()
-	explosion4.AddAnimation("default", "gfx/explosion3.png", 500, 9, ebiten.FilterDefault)
+	explosion4.AddAnimation(sprite.DefaultAnimationLabel, "gfx/explosion3.png", 500, 9, ebiten.FilterDefault)
 	explosion4.Position(windowWidth/2, windowHeight/2)
 	explosion4.RunOnce(afterRunOnce)
 

@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/hajimehoshi/ebiten"
-	"github.com/ryosama/go-sprite"
 	"log"
+
+	"github.com/favos-me/go-sprite"
+	"github.com/hajimehoshi/ebiten"
 )
 
 const (
@@ -37,17 +38,17 @@ func main() {
 	explosionDuration := 500
 	// create some explosions
 	explosion1 = sprite.NewSprite()
-	explosion1.AddAnimation("default", "gfx/explosion1.png", explosionDuration, 5, ebiten.FilterDefault)
+	explosion1.AddAnimation(sprite.DefaultAnimationLabel, "gfx/explosion1.png", explosionDuration, 5, ebiten.FilterDefault)
 	explosion1.Position(10, windowHeight/3*2)
 	explosion1.Start()
 
 	explosion2 = sprite.NewSprite()
-	explosion2.AddAnimation("default", "gfx/explosion2.png", explosionDuration, 7, ebiten.FilterDefault)
+	explosion2.AddAnimation(sprite.DefaultAnimationLabel, "gfx/explosion2.png", explosionDuration, 7, ebiten.FilterDefault)
 	explosion2.Position(windowWidth/2-24, windowHeight/3*2)
 	explosion2.Start()
 
 	explosion3 = sprite.NewSprite()
-	explosion3.AddAnimation("default", "gfx/explosion3.png", explosionDuration, 9, ebiten.FilterDefault)
+	explosion3.AddAnimation(sprite.DefaultAnimationLabel, "gfx/explosion3.png", explosionDuration, 9, ebiten.FilterDefault)
 	explosion3.Position(windowWidth-10-48, windowHeight/3*2)
 	explosion3.Start()
 
