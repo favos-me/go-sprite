@@ -1,6 +1,8 @@
 Go-sprite
 =======
 
+forked from https://github.com/ryosama/go-sprite and upgrade to ebiten v2, change label from string to int
+
 A simple library for playing with sprites and animations
 
 It use the [Ebiten](https://github.com/hajimehoshi/ebiten/v2) library for the 2D graphics engine
@@ -25,7 +27,7 @@ Quick Start
 import "github.com/favos-me/go-sprite"
 
 mySprite = sprite.NewSprite()
-mySprite.AddAnimation(1,	"walk_right.png", 700, 6, ebiten.FilterDefault)
+mySprite.AddAnimation(1,	"walk_right.png", 700, 6)
 mySprite.Position(WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
 mySprite.CurrentAnimation = 1
 mySprite.Speed = 2
