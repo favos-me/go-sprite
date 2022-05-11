@@ -1,4 +1,4 @@
-/*Package sprite permits animations of sprites via the Ebiten library (http://www.github.com/hajimehoshi/ebiten)
+/*Package sprite permits animations of sprites via the Ebiten library (http://www.github.com/hajimehoshi/ebiten/v2)
 
 Basic Usage :
 
@@ -15,12 +15,13 @@ mySprite.Start()
 import (
 	"image"
 	"image/color"
+	_ "image/png"
 	"log"
 	"math"
 	"time"
 
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	//"fmt"
 )
 
@@ -234,11 +235,11 @@ func NewSprite() *Sprite {
 	return sprite
 }
 
-func newAnimation(path string, duration int, steps int, filter ebiten.Filter) *Animation {
+func newAnimation(path string, duration int, steps int) *Animation {
 	var err error
 	animation := new(Animation)
 	animation.Path = path
-	animation.Image, _, err = ebitenutil.NewImageFromFile(path, filter)
+	animation.Image, _, err = ebitenutil.NewImageFromFile(path)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -276,8 +277,8 @@ Example :
 
 mySprite.AddAnimation("walk-right",	"walk_right.png", 700, 6, ebiten.FilterDefault)
 */
-func (sprite *Sprite) AddAnimation(label int, path string, duration int, steps int, filter ebiten.Filter) {
-	sprite.Animations[label] = newAnimation(path, duration, steps, filter)
+func (sprite *Sprite) AddAnimation(label int, path string, duration int, steps int) {
+	sprite.Animations[label] = newAnimation(path, duration, steps)
 }
 
 /*
@@ -616,13 +617,13 @@ func (sprite *Sprite) Draw(surface *ebiten.Image) {
 		x0 := currentAnimation.CurrentStep * currentAnimation.StepWidth
 		x1 := x0 + currentAnimation.StepWidth
 		r := image.Rect(x0, 0, x1, currentAnimation.StepHeight)
-		options.SourceRect = &r
-
+		// options.SourceRect = &r
 		if sprite.Borders {
 			sprite.DrawBorders(surface, violet)
 		}
 
-		surface.DrawImage(currentAnimation.Image, options)
+		sub := currentAnimation.Image.SubImage(r).(*ebiten.Image)
+		surface.DrawImage(sub, options)
 
 		sprite.NextStep()
 	}

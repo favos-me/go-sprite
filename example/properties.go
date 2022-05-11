@@ -4,43 +4,40 @@ import (
 	"log"
 
 	"github.com/favos-me/go-sprite"
-	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const (
 	windowWidth  = 320 // Width of the window
 	windowHeight = 240 // Height of the window
-	scale        = 2   // Scale of the window
 )
 
-var (
+type game struct {
 	sprites [7]*sprite.Sprite
-)
+}
 
-// update at every frame
-func update(surface *ebiten.Image) error {
-
-	// frame skip
-	if ebiten.IsDrawingSkipped() {
-		return nil
-	}
-
-	// draw sprites
-	for i := 0; i < len(sprites); i++ {
-		sprites[i].Draw(surface)
-	}
-
+func (g *game) Update() error {
 	return nil
 }
 
-func main() {
+func (g *game) Draw(screen *ebiten.Image) {
+	for i := 0; i < len(g.sprites); i++ {
+		g.sprites[i].Draw(screen)
+	}
+}
 
+func (g *game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+	return windowWidth, windowHeight
+}
+
+func main() {
+	var sprites [7]*sprite.Sprite
 	x := 1.0
 	y := 1.0
 	for i := 0; i < len(sprites); i++ {
 		sprites[i] = sprite.NewSprite()
 		sprites[i].CenterCoordonnates = true
-		sprites[i].AddAnimation(sprite.DefaultAnimationLabel, "gfx/som_girl_stand_down.png", 1, 1, ebiten.FilterDefault)
+		sprites[i].AddAnimation(sprite.DefaultAnimationLabel, "gfx/som_girl_stand_down.png", 1, 1)
 		sprites[i].Position(windowWidth/4*x, windowHeight/4*y)
 		sprites[i].Start()
 
@@ -75,8 +72,10 @@ func main() {
 	sprites[i].Borders = true // Debug Borders
 	i++
 
+	g := &game{sprites: sprites}
+	ebiten.SetWindowTitle("Sprite demo")
 	// infinite loop
-	if err := ebiten.Run(update, windowWidth, windowWidth, scale, "Sprite demo"); err != nil {
+	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
 }

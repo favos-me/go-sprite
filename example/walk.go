@@ -5,15 +5,14 @@ import (
 	"log"
 
 	sprite "github.com/favos-me/go-sprite"
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
-	"github.com/hajimehoshi/ebiten/inpututil"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 const (
 	windowWidth         = 320 // Width of the window
 	windowHeight        = 240 // Height of the window
-	scale               = 2   // Scale of the window
 	girlSpeed           = windowWidth / 160
 	AnimationStandLeft  = 1
 	AnimationStandRight = 2
@@ -25,75 +24,78 @@ const (
 	AnimationWalkDown   = 8
 )
 
-var (
+type game struct {
 	girl *sprite.Sprite
-)
+}
 
-// update at every frame
-func update(surface *ebiten.Image) error {
-
-	// manage controle
-	binding()
-
+func (g *game) Update() error {
+	binding(g)
 	// reset position if outside of the screen
-	if girl.X > windowWidth {
-		girl.X = 0 - girl.GetWidth()
+	if g.girl.X > windowWidth {
+		g.girl.X = 0 - g.girl.GetWidth()
 	}
-	if girl.X+girl.GetWidth() < 0 {
-		girl.X = windowWidth
+	if g.girl.X+g.girl.GetWidth() < 0 {
+		g.girl.X = windowWidth
 	}
-	if girl.Y+girl.GetHeight() < 0 {
-		girl.Y = windowHeight + 2*girl.GetHeight()
+	if g.girl.Y+g.girl.GetHeight() < 0 {
+		g.girl.Y = windowHeight + 2*g.girl.GetHeight()
 	}
-	if girl.Y-2*girl.GetHeight() > windowHeight {
-		girl.Y = 0 - girl.GetHeight()
+	if g.girl.Y-2*g.girl.GetHeight() > windowHeight {
+		g.girl.Y = 0 - g.girl.GetHeight()
 	}
 
 	// frame skip
-	if ebiten.IsDrawingSkipped() {
-		return nil
-	}
-
-	// draw sprite
-	girl.Draw(surface)
-
-	// display some informations
-	drawFPS(surface)
+	// if ebiten.IsDrawingSkipped() {
+	// 	return nil
+	// }
 
 	return nil
 }
 
-func main() {
+func (g *game) Draw(screen *ebiten.Image) {
+	g.girl.Draw(screen)
+	drawFPS(g, screen)
+}
 
+func (g *game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+	return windowWidth, windowHeight
+}
+
+func main() {
 	// create new sprite and load animations
-	girl = sprite.NewSprite()
-	girl.AddAnimation(AnimationStandRight, "gfx/som_girl_stand_right.png", 0, 1, ebiten.FilterDefault)
-	girl.AddAnimation(AnimationWalkRight, "gfx/som_girl_walk_right.png", 700, 6, ebiten.FilterDefault)
-	girl.AddAnimation(AnimationStandLeft, "gfx/som_girl_stand_left.png", 0, 1, ebiten.FilterDefault)
-	girl.AddAnimation(AnimationWalkleft, "gfx/som_girl_walk_left.png", 700, 6, ebiten.FilterDefault)
-	girl.AddAnimation(AnimationStandUp, "gfx/som_girl_stand_up.png", 0, 1, ebiten.FilterDefault)
-	girl.AddAnimation(AnimationWalkUp, "gfx/som_girl_walk_up.png", 500, 4, ebiten.FilterDefault)
-	girl.AddAnimation(AnimationStandDown, "gfx/som_girl_stand_down.png", 0, 1, ebiten.FilterDefault)
-	girl.AddAnimation(AnimationWalkDown, "gfx/som_girl_walk_down.png", 500, 4, ebiten.FilterDefault)
+	girl := sprite.NewSprite()
+	girl.AddAnimation(AnimationStandRight, "gfx/som_girl_stand_right.png", 0, 1)
+	girl.AddAnimation(AnimationWalkRight, "gfx/som_girl_walk_right.png", 700, 6)
+	girl.AddAnimation(AnimationStandLeft, "gfx/som_girl_stand_left.png", 0, 1)
+	girl.AddAnimation(AnimationWalkleft, "gfx/som_girl_walk_left.png", 700, 6)
+	girl.AddAnimation(AnimationStandUp, "gfx/som_girl_stand_up.png", 0, 1)
+	girl.AddAnimation(AnimationWalkUp, "gfx/som_girl_walk_up.png", 500, 4)
+	girl.AddAnimation(AnimationStandDown, "gfx/som_girl_stand_down.png", 0, 1)
+	girl.AddAnimation(AnimationWalkDown, "gfx/som_girl_walk_down.png", 500, 4)
 
 	// set position and first animation
 	girl.Position(windowWidth/2, windowHeight/2)
 	girl.CurrentAnimation = AnimationStandRight
 	girl.Start()
 
+	g := &game{
+		girl: girl,
+	}
+	ebiten.SetWindowTitle("girl walk")
+
 	// infinite loop
-	if err := ebiten.Run(update, windowWidth, windowWidth, scale, "Sprite demo"); err != nil {
+	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
 }
 
 // display some stuff on the screen
-func drawFPS(surface *ebiten.Image) {
+func drawFPS(g *game, surface *ebiten.Image) {
 	ebitenutil.DebugPrint(surface,
 		fmt.Sprintf("FPS:%0.1f  X:%d Y:%d %s\nLeft:%v Right:%v Up:%v Down:%v",
 			ebiten.CurrentFPS(),
-			int(girl.X), int(girl.Y),
-			girl.CurrentAnimation,
+			int(g.girl.X), int(g.girl.Y),
+			g.girl.CurrentAnimation,
 			ebiten.IsKeyPressed(ebiten.KeyLeft),
 			ebiten.IsKeyPressed(ebiten.KeyRight),
 			ebiten.IsKeyPressed(ebiten.KeyUp),
@@ -101,96 +103,96 @@ func drawFPS(surface *ebiten.Image) {
 		))
 }
 
-func binding() {
+func binding(g *game) {
 
 	//////////////////////////// GO THE RIGHT
 	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
 
 		if ebiten.IsKeyPressed(ebiten.KeyUp) { // Right+Up
-			girl.Direction = 45
-			girl.Speed = girlSpeed + 1
+			g.girl.Direction = 45
+			g.girl.Speed = girlSpeed + 1
 		} else if ebiten.IsKeyPressed(ebiten.KeyDown) { // Right+Down
-			girl.Direction = -45
-			girl.Speed = girlSpeed + 1
+			g.girl.Direction = -45
+			g.girl.Speed = girlSpeed + 1
 		} else { // Right
-			girl.Direction = 0
-			girl.Speed = girlSpeed
+			g.girl.Direction = 0
+			g.girl.Speed = girlSpeed
 		}
-		girl.CurrentAnimation = AnimationWalkRight
-		girl.Start() // Show, Reset, Resume
+		g.girl.CurrentAnimation = AnimationWalkRight
+		g.girl.Start() // Show, Reset, Resume
 	}
 
 	if inpututil.IsKeyJustReleased(ebiten.KeyRight) {
-		girl.Speed = 0
-		girl.CurrentAnimation = AnimationStandRight
+		g.girl.Speed = 0
+		g.girl.CurrentAnimation = AnimationStandRight
 	}
 
 	//////////////////////////// GO THE LEFT
 	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
 
 		if ebiten.IsKeyPressed(ebiten.KeyUp) { // Left+Up
-			girl.Direction = 135
-			girl.Speed = girlSpeed + 1
+			g.girl.Direction = 135
+			g.girl.Speed = girlSpeed + 1
 		} else if ebiten.IsKeyPressed(ebiten.KeyDown) { // Left+Down
-			girl.Direction = 225
-			girl.Speed = girlSpeed + 1
+			g.girl.Direction = 225
+			g.girl.Speed = girlSpeed + 1
 		} else { // Left
-			girl.Speed = girlSpeed
-			girl.Direction = 180
+			g.girl.Speed = girlSpeed
+			g.girl.Direction = 180
 		}
 
-		girl.CurrentAnimation = AnimationWalkleft
-		girl.Start() // Show, Reset, Resume
+		g.girl.CurrentAnimation = AnimationWalkleft
+		g.girl.Start() // Show, Reset, Resume
 	}
 
 	if inpututil.IsKeyJustReleased(ebiten.KeyLeft) {
-		girl.Speed = 0
-		girl.CurrentAnimation = AnimationStandLeft
+		g.girl.Speed = 0
+		g.girl.CurrentAnimation = AnimationStandLeft
 	}
 
 	//////////////////////////// GO THE TOP
 	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
 
 		if ebiten.IsKeyPressed(ebiten.KeyRight) { // Up+Right
-			girl.Direction = 45
-			girl.Speed = girlSpeed + 1
+			g.girl.Direction = 45
+			g.girl.Speed = girlSpeed + 1
 		} else if ebiten.IsKeyPressed(ebiten.KeyLeft) { // Up+Left
-			girl.Direction = 135
-			girl.Speed = girlSpeed + 1
+			g.girl.Direction = 135
+			g.girl.Speed = girlSpeed + 1
 		} else { // Up
-			girl.Direction = 90
-			girl.Speed = girlSpeed
+			g.girl.Direction = 90
+			g.girl.Speed = girlSpeed
 		}
 
-		girl.CurrentAnimation = AnimationWalkUp
-		girl.Start() // Show, Reset, Resume
+		g.girl.CurrentAnimation = AnimationWalkUp
+		g.girl.Start() // Show, Reset, Resume
 	}
 
 	if inpututil.IsKeyJustReleased(ebiten.KeyUp) {
-		girl.Speed = 0
-		girl.CurrentAnimation = AnimationStandUp
+		g.girl.Speed = 0
+		g.girl.CurrentAnimation = AnimationStandUp
 	}
 
 	//////////////////////////// GO THE BOTTOM
 	if inpututil.IsKeyJustPressed(ebiten.KeyDown) {
 
 		if ebiten.IsKeyPressed(ebiten.KeyRight) { // Down+Right
-			girl.Direction = -45
-			girl.Speed = girlSpeed + 1
+			g.girl.Direction = -45
+			g.girl.Speed = girlSpeed + 1
 		} else if ebiten.IsKeyPressed(ebiten.KeyLeft) { // Down+Left
-			girl.Direction = 225
-			girl.Speed = girlSpeed + 1
+			g.girl.Direction = 225
+			g.girl.Speed = girlSpeed + 1
 		} else { // Down
-			girl.Speed = girlSpeed
-			girl.Direction = 270
+			g.girl.Speed = girlSpeed
+			g.girl.Direction = 270
 		}
 
-		girl.CurrentAnimation = AnimationWalkDown
-		girl.Start() // Show, Reset, Resume
+		g.girl.CurrentAnimation = AnimationWalkDown
+		g.girl.Start() // Show, Reset, Resume
 	}
 
 	if inpututil.IsKeyJustReleased(ebiten.KeyDown) {
-		girl.Speed = 0
-		girl.CurrentAnimation = AnimationStandDown
+		g.girl.Speed = 0
+		g.girl.CurrentAnimation = AnimationStandDown
 	}
 }
